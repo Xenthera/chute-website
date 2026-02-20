@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chute - Peer-to-Peer File Transfer</title>
+  <meta name="description" content="Chute is a fast, secure peer-to-peer file transfer application. Send files directly between devices without cloud storage.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #f8faff 0%, #e8edf5 100%);
+      color: #4a4f57;
+      padding: 2rem;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 600px;
+    }
+
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 2rem;
+      background: linear-gradient(180deg, #eef0f3 0%, #e6e8ec 100%);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 
+        8px 8px 16px rgba(150, 160, 170, 0.4),
+        -8px -8px 16px rgba(255, 255, 255, 0.9);
+    }
+
+    .logo svg {
+      width: 64px;
+      height: 64px;
+      fill: #2d7dd2;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 600;
+      color: #2d7dd2;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.5px;
+    }
+
+    .tagline {
+      font-size: 1.25rem;
+      color: #7b818b;
+      font-weight: 300;
+      margin-bottom: 2rem;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(180deg, #eef0f3 0%, #e6e8ec 100%);
+      border-radius: 12px;
+      font-size: 0.9rem;
+      color: #5c6f7c;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      box-shadow: 
+        4px 4px 8px rgba(150, 160, 170, 0.3),
+        -4px -4px 8px rgba(255, 255, 255, 0.8);
+    }
+
+    .status::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #f59e0b;
+      border-radius: 50%;
+      margin-right: 8px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .features {
+      margin-top: 3rem;
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .feature {
+      text-align: center;
+    }
+
+    .feature-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-text {
+      font-size: 0.85rem;
+      color: #7b818b;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 2rem;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    footer a {
+      color: #7b818b;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: #2d7dd2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L4 7v10l8 5 8-5V7l-8-5zm0 2.5L17.5 8 12 11.5 6.5 8 12 4.5zM6 9.5l5 3v6l-5-3v-6zm12 0v6l-5 3v-6l5-3z"/>
+      </svg>
+    </div>
+    
+    <h1>Chute</h1>
+    <p class="tagline">Peer-to-peer file transfer, simplified.</p>
+    
+    <span class="status">Coming Soon</span>
+    
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-text">End-to-end encrypted</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-text">Direct transfer</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">☁️</div>
+        <div class="feature-text">No cloud storage</div>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <a href="https://github.com/Xenthera/Chute">GitHub</a>
+  </footer>
+</body>
+</html>
