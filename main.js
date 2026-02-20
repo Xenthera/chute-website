@@ -229,6 +229,104 @@ class ChuteCanvas {
   }
 }
 
+// Download button: platform labels and URLs (replace with real URLs when available)
+const DOWNLOAD_CONFIG = {
+  "macos-arm64":   { label: "Mac", sub: "Apple Silicon", icon: "icon-apple", href: "#download-macos-arm64" },
+  "macos-x64":     { label: "Mac", sub: "Intel",        icon: "icon-apple", href: "#download-macos-x64" },
+  "windows-x64":  { label: "Windows", sub: "x64",      icon: "icon-windows", href: "#download-windows-x64" },
+  "windows-arm64": { label: "Windows", sub: "ARM64",   icon: "icon-windows", href: "#download-windows-arm64" },
+  "linux-x64":    { label: "Linux", sub: "x86_64",     icon: "icon-linux", href: "#download-linux-x64" },
+  "linux-arm64":  { label: "Linux", sub: "ARM64",     icon: "icon-linux", href: "#download-linux-arm64" },
+};
+
+function getWebGLRenderer() {
+  try {
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    if (!gl) return "";
+    const ext = gl.getExtension("WEBGL_debug_renderer_info");
+    if (!ext) return "";
+    return (gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || "").toLowerCase();
+  } catch (_) {
+    return "";
+  }
+}
+
+function detectPlatform() {
+  const ua = navigator.userAgent.toLowerCase();
+  const platform = navigator.userAgentData?.platform?.toLowerCase() || navigator.platform?.toLowerCase() || "";
+  let arch = navigator.userAgentData?.architecture?.toLowerCase();
+  if (!arch) arch = ua.includes("arm") || ua.includes("aarch64") ? "arm" : "x86";
+
+  if (ua.includes("mac") || platform.includes("mac") || ua.includes("iphone") || ua.includes("ipad")) {
+    if (arch === "arm") return "macos-arm64";
+    if (arch === "x86" || platform.includes("intel")) {
+      const renderer = getWebGLRenderer();
+      if (renderer.includes("apple m")) return "macos-arm64";
+      if (renderer.includes("intel")) return "macos-x64";
+    }
+    return "macos-arm64";
+  }
+  if (ua.includes("win") || platform.includes("win")) {
+    return arch === "arm" ? "windows-arm64" : "windows-x64";
+  }
+  if (ua.includes("linux") || platform.includes("linux")) {
+    return arch === "arm" ? "linux-arm64" : "linux-x64";
+  }
+  return "macos-arm64";
+}
+
+function setDownloadButton(id) {
+  const cfg = DOWNLOAD_CONFIG[id];
+  if (!cfg) return;
+  const main = document.getElementById("download-main");
+  const iconEl = main?.querySelector(".download-btn-icon");
+  if (!main || !iconEl) return;
+  main.href = cfg.href;
+  main.setAttribute("data-platform", id);
+  main.querySelector(".download-btn-text").textContent = cfg.label + (cfg.sub ? ` (${cfg.sub})` : "");
+  iconEl.innerHTML = `<svg><use href="#${cfg.icon}"/></svg>`;
+}
+
+function initDownloadButton() {
+  const main = document.getElementById("download-main");
+  const wrap = document.querySelector(".download-dropdown-wrap");
+  const trigger = document.querySelector(".download-dropdown-trigger");
+  const dropdown = document.getElementById("download-dropdown");
+  if (!main || !wrap || !trigger || !dropdown) return;
+
+  const detected = detectPlatform();
+  setDownloadButton(detected);
+
+  trigger.addEventListener("click", (e) => {
+    e.preventDefault();
+    const open = wrap.getAttribute("aria-expanded") === "true";
+    wrap.setAttribute("aria-expanded", !open);
+    trigger.setAttribute("aria-expanded", !open);
+    dropdown.setAttribute("aria-hidden", open);
+  });
+
+  dropdown.querySelectorAll("a").forEach((link) => {
+    const id = link.getAttribute("data-id");
+    if (id && DOWNLOAD_CONFIG[id]) link.href = DOWNLOAD_CONFIG[id].href;
+    link.addEventListener("click", () => {
+      const dataId = link.getAttribute("data-id");
+      if (dataId) setDownloadButton(dataId);
+      wrap.setAttribute("aria-expanded", "false");
+      trigger.setAttribute("aria-expanded", "false");
+      dropdown.setAttribute("aria-hidden", "true");
+    });
+  });
+
+  document.addEventListener("click", (e) => {
+    if (wrap.getAttribute("aria-expanded") === "true" && !wrap.contains(e.target)) {
+      wrap.setAttribute("aria-expanded", "false");
+      trigger.setAttribute("aria-expanded", "false");
+      dropdown.setAttribute("aria-hidden", "true");
+    }
+  });
+}
+
 // Initialize when DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
   // Initialize the chute canvas
@@ -237,6 +335,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const chute = new ChuteCanvas(canvas);
     chute.start();
   }
+
+  initDownloadButton();
 
   // Dark mode toggle
   const darkModeToggle = document.getElementById("dark-mode-toggle");
