@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chute — Stupid Simple File Transfer</title>
+  <title>Chute: Stupid Simple File Transfer</title>
   <meta name="description" content="Chute is a fast, secure peer-to-peer file transfer application. Send files directly between devices without cloud storage.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,6 +49,10 @@
       <circle cx="12" cy="12" r="10"/>
       <line x1="2" y1="12" x2="22" y2="12"/>
       <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <line x1="6" y1="6" x2="18" y2="18"/>
+      <line x1="18" y1="6" x2="6" y2="18"/>
     </symbol>
     <symbol id="icon-monitor" viewBox="0 0 24 24">
       <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
@@ -107,7 +111,8 @@
           <a href="#" role="menuitem" data-id="macos-x64"><svg class="dropdown-item-icon"><use href="#icon-apple"/></svg>Mac (Intel)</a>
           <a href="#" role="menuitem" data-id="windows-x64"><svg class="dropdown-item-icon"><use href="#icon-windows"/></svg>Windows (x64)</a>
           <a href="#" role="menuitem" data-id="windows-arm64"><svg class="dropdown-item-icon"><use href="#icon-windows"/></svg>Windows (ARM64)</a>
-          <a href="#" role="menuitem" data-id="linux-x64"><svg class="dropdown-item-icon"><use href="#icon-linux"/></svg>Linux (x86_64)</a>
+          <a href="#" role="menuitem" data-id="linux-x64"><svg class="dropdown-item-icon"><use href="#icon-linux"/></svg>Linux (AppImage)</a>
+          <a href="#" role="menuitem" data-id="linux-bin-x64"><svg class="dropdown-item-icon"><use href="#icon-linux"/></svg>Linux (x86_64 binary)</a>
           <a href="#" role="menuitem" data-id="linux-arm64"><svg class="dropdown-item-icon"><use href="#icon-linux"/></svg>Linux (ARM64)</a>
         </div>
       </div>
@@ -115,10 +120,72 @@
 
     <div class="page-links-band">
       <nav class="page-links">
-        <a href="#about">About</a>
-        <a href="#faq">FAQ</a>
-        <a href="#download">Download</a>
+        <a href="#about" data-panel="about">About</a>
+        <a href="#faq" data-panel="faq">FAQ</a>
       </nav>
+    </div>
+
+    <!-- The page splits open here: the well below is recessed into the surface,
+         same material as the chute, and scrolls independently. -->
+    <div class="split-panel" id="split-panel" data-open="false">
+      <div class="split-panel-well">
+        <button type="button" class="split-panel-close" id="split-panel-close" aria-label="Close">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-close"/></svg>
+        </button>
+        <div class="split-panel-scroll" id="split-panel-scroll" tabindex="0" role="region" aria-label="Page content">
+          <section class="panel-section" id="panel-about" aria-labelledby="panel-about-title" hidden>
+            <h2 id="panel-about-title">About Chute</h2>
+            <p>Chute sends a file straight from your machine to someone else's. There is no upload step, no account, and no copy of your file sitting on a server afterwards. The bytes leave your device and arrive at theirs, and that is the whole path.</p>
+
+            <h3>How it works</h3>
+            <p>Both sides open Chute and exchange a short peer ID. A rendezvous server introduces the two machines to each other, then steps out of the way: it only ever brokers the connection details, never the file itself.</p>
+            <p>From there the two devices talk over an encrypted WebRTC data channel. Chute deliberately ships without a relay server, so your data is never routed through infrastructure we operate. If a direct path can't be found, the transfer fails honestly instead of quietly falling back to someone else's hardware.</p>
+
+            <h3>Getting through the network</h3>
+            <p>Direct connections are the hard part, so Chute tries every route at once: IPv6, multiple STUN servers, UPnP and NAT-PMP port mapping, mDNS for peers on the same network, and ICE over TCP where UDP is blocked. For the awkward case of two symmetric NATs, it predicts the ports the other side's router will hand out and aims at them.</p>
+
+            <h3>What it costs you</h3>
+            <p>Chute is free for personal use. There are no file size caps, no transfer quotas, and no bandwidth bill on our side to pass on to you, because your files never touch our bandwidth.</p>
+
+            <h3>Platforms</h3>
+            <p>Native desktop builds for macOS (Apple Silicon and Intel), Windows (x64 and ARM64), and Linux. Grab the build for your machine from the download button above.</p>
+          </section>
+
+          <section class="panel-section" id="panel-faq" aria-labelledby="panel-faq-title" hidden>
+            <h2 id="panel-faq-title">Frequently asked</h2>
+
+            <h3>Do my files get uploaded anywhere?</h3>
+            <p>No. The file moves directly from sender to recipient over an encrypted channel between the two devices. We never receive it, store it, or have any way to read it.</p>
+
+            <h3>Then what is the server for?</h3>
+            <p>Introductions only. The rendezvous server helps two peers find each other and swap the technical details needed to open a connection. Once that handshake is done it has no further involvement, and it never sees a single byte of file data.</p>
+
+            <h3>Is there a file size limit?</h3>
+            <p>No. Since there's no storage tier to fill up, transfer size is bounded only by your disk and how long you're willing to leave the window open.</p>
+
+            <h3>Do both people need to be online at the same time?</h3>
+            <p>Yes. A direct transfer needs both ends present, because there's no intermediate copy to hold the file while the other side catches up. That's the trade for never handing your data to a third party.</p>
+
+            <h3>Is it encrypted?</h3>
+            <p>Yes, end to end. The data channel between the two peers is encrypted by default, and because there's no relay in the middle there is nowhere for an intermediary to decrypt it even in principle.</p>
+
+            <h3>Do I need an account?</h3>
+            <p>No. There's no sign-up, no email, and no profile. Open the app, share your peer ID, transfer.</p>
+
+            <h3>Does it work behind a corporate firewall?</h3>
+            <p>Often, but not always. Chute tries hard, with IPv6, port mapping, and a TCP fallback for networks that block UDP, but a network that blocks direct peer connections outright will stop the transfer, since there's no relay to fall back on.</p>
+
+            <h3>Is it free?</h3>
+            <p>Yes, free for personal use. No subscription, no per-transfer fee, and nothing to unlock.</p>
+
+            <h3>Which platforms are supported?</h3>
+            <p>macOS (Apple Silicon and Intel), Windows (x64 and ARM64), and Linux x86_64 as an AppImage or a plain binary. A Linux ARM64 build isn't published yet.</p>
+
+            <h3>How do I report a problem?</h3>
+            <p>Email <a href="mailto:contact@chute.to">contact@chute.to</a> with what you were doing and what happened.</p>
+          </section>
+        </div>
+      </div>
     </div>
 
     <div class="features">
@@ -162,7 +229,7 @@
   </div>
 
   <div class="disclaimer">
-    <p>Chute enables direct file transfers between devices. Files are sent directly from sender to recipient — we cannot see, access, or store any transferred content. You are solely responsible for the files you send and receive.</p>
+    <p>Chute enables direct file transfers between devices. Files are sent directly from sender to recipient, and we cannot see, access, or store any transferred content. You are solely responsible for the files you send and receive.</p>
     <p>Do not use Chute for illegal purposes, including but not limited to transferring copyrighted material without authorization, malware, or any content that violates applicable laws. By using Chute, you agree to comply with all applicable laws and accept full responsibility for your actions. Chute and its developers assume no liability for misuse.</p>
     <p class="footer-legal">
       <span class="copyright">© 2026 Chute. All rights reserved.</span>

@@ -21,6 +21,9 @@ body {
   background: radial-gradient(circle at top left, #f8faff, #cfd4df);
   color: #4a4f57;
   padding: 2rem 2rem 0 2rem;
+  /* The split panel breaks out to 100vw; on platforms with a classic scrollbar
+     that is a few px wider than the content box, so clamp the overflow. */
+  overflow-x: hidden;
   transition: background 0.3s ease, color 0.3s ease;
 }
 
@@ -77,7 +80,7 @@ body {
   border-radius: 18px;
 }
 
-/* Thin 1px frame with pill-shaped ends around the links — subtle “page lifted apart” */
+/* Thin 1px frame with pill-shaped ends around the links, a subtle “page lifted apart” */
 .page-links-band {
   width: 100%;
   max-width: 320px;
@@ -165,8 +168,8 @@ h1 {
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
-/* Whole pill turns yellow only when hovering the main button, not the dropdown trigger or menu */
-.download-cta:has(.download-btn:hover) {
+/* Whole pill turns yellow only when hovering an unavailable (coming soon) build */
+.download-cta:has(.download-btn[data-available="false"]:hover) {
   border-color: rgba(202, 138, 4, 0.45);
   background: rgba(234, 179, 8, 0.08);
 }
@@ -176,7 +179,7 @@ body.dark-mode .download-cta {
   background: rgba(59, 130, 246, 0.12);
 }
 
-body.dark-mode .download-cta:has(.download-btn:hover) {
+body.dark-mode .download-cta:has(.download-btn[data-available="false"]:hover) {
   border-color: rgba(251, 191, 36, 0.5);
   background: rgba(234, 179, 8, 0.12);
 }
@@ -210,11 +213,13 @@ body.dark-mode .download-cta:has(.download-btn:hover) {
   background: rgba(59, 130, 246, 0.12);
 }
 
-.download-cta:has(.download-btn:hover) .download-btn {
+/* The amber "Coming soon" treatment applies only to platforms with no build
+   published yet; available ones keep the plain blue hover. */
+.download-cta:has(.download-btn[data-available="false"]:hover) .download-btn {
   color: #b45309;
 }
 
-.download-cta:has(.download-btn:hover) .download-btn:hover {
+.download-cta:has(.download-btn[data-available="false"]:hover) .download-btn:hover {
   background: rgba(234, 179, 8, 0.12);
 }
 
@@ -230,12 +235,12 @@ body.dark-mode .download-cta:has(.download-btn:hover) {
   color: #b45309;
 }
 
-.download-btn:hover .download-btn-icon,
-.download-btn:hover .download-btn-text {
+.download-btn[data-available="false"]:hover .download-btn-icon,
+.download-btn[data-available="false"]:hover .download-btn-text {
   opacity: 0;
 }
 
-.download-btn:hover .download-btn-hover-text {
+.download-btn[data-available="false"]:hover .download-btn-hover-text {
   opacity: 1;
 }
 
@@ -272,11 +277,11 @@ body.dark-mode .download-btn {
   color: #60a5fa;
 }
 
-body.dark-mode .download-cta:has(.download-btn:hover) .download-btn {
+body.dark-mode .download-cta:has(.download-btn[data-available="false"]:hover) .download-btn {
   color: #fcd34d;
 }
 
-body.dark-mode .download-btn:hover .download-btn-hover-text {
+body.dark-mode .download-btn[data-available="false"]:hover .download-btn-hover-text {
   color: #fcd34d;
 }
 
@@ -301,7 +306,7 @@ body.dark-mode .download-btn:hover .download-btn-hover-text {
   transition: color 0.2s ease, background 0.2s ease;
 }
 
-.download-cta:has(.download-btn:hover) .download-dropdown-trigger {
+.download-cta:has(.download-btn[data-available="false"]:hover) .download-dropdown-trigger {
   color: #b45309;
   border-left-color: rgba(202, 138, 4, 0.35);
 }
@@ -311,7 +316,7 @@ body.dark-mode .download-btn:hover .download-btn-hover-text {
   color: #1d4ed8;
 }
 
-.download-cta:has(.download-btn:hover) .download-dropdown-trigger:hover {
+.download-cta:has(.download-btn[data-available="false"]:hover) .download-dropdown-trigger:hover {
   background: rgba(234, 179, 8, 0.12);
   color: #92400e;
 }
@@ -321,7 +326,7 @@ body.dark-mode .download-dropdown-trigger {
   border-left-color: rgba(96, 165, 250, 0.4);
 }
 
-body.dark-mode .download-cta:has(.download-btn:hover) .download-dropdown-trigger {
+body.dark-mode .download-cta:has(.download-btn[data-available="false"]:hover) .download-dropdown-trigger {
   color: #fcd34d;
   border-left-color: rgba(251, 191, 36, 0.4);
 }
@@ -331,7 +336,7 @@ body.dark-mode .download-dropdown-trigger:hover {
   color: #93c5fd;
 }
 
-body.dark-mode .download-cta:has(.download-btn:hover) .download-dropdown-trigger:hover {
+body.dark-mode .download-cta:has(.download-btn[data-available="false"]:hover) .download-dropdown-trigger:hover {
   background: rgba(234, 179, 8, 0.18);
   color: #fde68a;
 }
@@ -407,6 +412,271 @@ body.dark-mode .download-dropdown a {
 body.dark-mode .download-dropdown a:hover {
   background: rgba(255, 255, 255, 0.08);
   color: #60a5fa;
+}
+
+/* Platforms with no published build yet */
+.download-dropdown a[data-available="false"] {
+  opacity: 0.55;
+}
+
+.download-dropdown a[data-available="false"]::after {
+  content: "soon";
+  margin-left: auto;
+  padding-left: 0.75rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #b45309;
+}
+
+.download-dropdown a[data-available="false"]:hover {
+  color: inherit;
+  background: transparent;
+  cursor: default;
+}
+
+body.dark-mode .download-dropdown a[data-available="false"]::after {
+  color: #fcd34d;
+}
+
+/* ========== Split-open panel ==========
+   About/FAQ split the whole page apart: the chasm runs the full viewport width,
+   with a hard cut line along each torn edge and the page material casting a
+   shadow down and up into the gap. Height is fixed so the transition is smooth
+   and the content scrolls inside rather than growing the page. */
+.split-panel {
+  --panel-height: min(56vh, 460px);
+  /* Break out of the centred container to span the viewport edge to edge */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  height: 0;
+  overflow: hidden;
+  /* Slight overshoot so the halves separate with a bit of weight behind them */
+  transition: height 0.55s cubic-bezier(0.22, 1.1, 0.36, 1),
+    margin-top 0.55s cubic-bezier(0.22, 1.1, 0.36, 1),
+    margin-bottom 0.55s cubic-bezier(0.22, 1.1, 0.36, 1);
+}
+
+.split-panel[data-open="true"] {
+  height: var(--panel-height);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.split-panel-well {
+  position: relative;
+  height: 100%;
+  background: var(--surface);
+  /* Hard cut lines matching the About/FAQ band outline */
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  /* Shadow only from the torn edges above and below, with no side or corner
+     falloff. The tight pair sits right under each cut line as the lip of the
+     page material; the wide pair is the deeper falloff into the gap. */
+  box-shadow: inset 0 3px 4px -2px var(--shadow-dark),
+    inset 0 -3px 4px -2px var(--shadow-dark),
+    inset 0 12px 14px -10px var(--shadow-dark),
+    inset 0 -12px 14px -10px var(--shadow-dark);
+  /* Fades in behind the opening halves so the gap appears to be uncovered */
+  opacity: 0;
+  transition: opacity 0.35s ease 0.12s;
+}
+
+body.dark-mode .split-panel-well {
+  border-top-color: rgba(255, 255, 255, 0.12);
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+.split-panel[data-open="true"] .split-panel-well {
+  opacity: 1;
+}
+
+.split-panel-scroll {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Full-bleed strip, text still held to the page's reading column. The right
+     side never drops below the close button's footprint, so on narrow screens
+     where the column runs edge to edge the copy still clears it. */
+  padding: 2.25rem max(3.25rem, calc(50% - 340px)) 2.25rem max(1.5rem, calc(50% - 340px));
+  text-align: left;
+  /* Content dissolves into the torn edges instead of stopping against them */
+  mask-image: linear-gradient(to bottom, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+}
+
+.split-panel-scroll:focus-visible {
+  outline: none;
+}
+
+.split-panel-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.split-panel-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.split-panel-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.split-panel-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.28);
+  background-clip: content-box;
+}
+
+.panel-section[hidden] {
+  display: none;
+}
+
+.panel-section {
+  animation: panel-content-in 0.4s ease 0.18s both;
+}
+
+@keyframes panel-content-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.panel-section h2 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #5a606a;
+  margin-bottom: 1rem;
+}
+
+.panel-section h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #5a606a;
+  margin-top: 1.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.panel-section p {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: #7b818b;
+  font-weight: 300;
+}
+
+.panel-section p + p {
+  margin-top: 0.6rem;
+}
+
+.panel-section a {
+  color: #2563eb;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(37, 99, 235, 0.35);
+}
+
+.panel-section a:hover {
+  border-bottom-color: currentColor;
+}
+
+.split-panel-close {
+  position: absolute;
+  top: 0.85rem;
+  /* Sits in the margin outside the reading column so copy never runs under it,
+     falling back toward the viewport edge once the column reaches full width */
+  right: max(1rem, calc(50% - 430px));
+  z-index: 3;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  /* Same thin-outline vocabulary as the link band and download pill */
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  color: #6b7280;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.split-panel-close svg {
+  width: 14px;
+  height: 14px;
+}
+
+.split-panel-close:hover {
+  color: #4a4f57;
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.page-links a[aria-current="page"] {
+  color: #4a4f57;
+}
+
+body.dark-mode .panel-section h2,
+body.dark-mode .panel-section h3 {
+  color: #d1d5db;
+}
+
+body.dark-mode .panel-section p {
+  color: #9ca3af;
+}
+
+body.dark-mode .panel-section a {
+  color: #60a5fa;
+  border-bottom-color: rgba(96, 165, 250, 0.35);
+}
+
+body.dark-mode .split-panel-scroll {
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+body.dark-mode .split-panel-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  background-clip: content-box;
+}
+
+body.dark-mode .split-panel-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+  background-clip: content-box;
+}
+
+body.dark-mode .split-panel-close {
+  color: #9ca3af;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .split-panel-close:hover {
+  color: #e4e6eb;
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+body.dark-mode .page-links a[aria-current="page"] {
+  color: #e4e6eb;
+}
+
+@media (max-width: 480px) {
+  .split-panel-scroll {
+    /* Right side still reserves the close button's footprint */
+    padding: 1.5rem 3rem 1.5rem 1.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split-panel,
+  .split-panel-well {
+    transition-duration: 0.01ms;
+  }
+
+  .panel-section {
+    animation: none;
+  }
 }
 
 @keyframes pulse {
